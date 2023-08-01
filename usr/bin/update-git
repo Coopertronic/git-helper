@@ -1,0 +1,38 @@
+#!/bin/bash
+
+clear
+lineBreak="<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>"
+echo "Updating the current repo and pushing it to GitHub."
+echo $lineBreak
+if !( git add . ); then
+    echo "Something went wrong while trying to add files."
+    echo "Make sure you are in the right directory."
+    exit 1
+else
+    echo "Changes successfully added."
+    echo $lineBreak
+    echo "Please please type your notes for this commit and press enter when done."
+    read theCommit
+    if !( git commit -m $theCommit ); then
+        echo "Unable to commit changes."
+        echo "Read above messages for errors."
+        echo $lineBreak
+        exit 1
+    else
+        echo $lineBreak
+        echo "Changes commited successfully."
+        echo "Please enter your password."
+        if !(git push); then
+            echo $lineBreak
+            echo "Something went wrong."
+            echo "Please check the above messages for errors."
+            echo $lineBreak
+            exit 1
+        else
+            echo $lineBreak
+            echo "All done. Git rerpo successfully updated."
+            echo $lineBreak
+        fi
+    fi
+fi
+exit 0
