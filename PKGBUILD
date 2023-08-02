@@ -1,7 +1,7 @@
 # Maintainer: Matthew Phillip Cooper <matthew@coopertronic.co.uk>
 pkgname=git-helper
 _destname1="/usr"
-pkgver=1
+pkgver=1.r7.8a6c9f2
 pkgrel=1
 pkgdesc="Helper scripts that make using git in CLI less time consuming."
 arch=('any')
