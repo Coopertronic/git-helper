@@ -1,6 +1,7 @@
 #!/bin/bash
 
 clear
+cd "$PWD"
 lineBreak="<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>"
 echo "Updating the current repo and pushing it to GitHub."
 echo $lineBreak
@@ -13,7 +14,7 @@ else
     echo $lineBreak
     echo "Please please type your notes for this commit and press enter when done."
     read theCommit
-    if !( git commit -m $theCommit ); then
+    if !( git commit -m "$theCommit" ); then
         echo "Unable to commit changes."
         echo "Read above messages for errors."
         echo $lineBreak
@@ -30,7 +31,7 @@ else
             exit 1
         else
             echo $lineBreak
-            echo "All done. Git rerpo successfully updated."
+            echo "All done. Git repo successfully updated."
             echo $lineBreak
         fi
     fi
