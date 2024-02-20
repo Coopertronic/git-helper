@@ -9,8 +9,7 @@ echo "Updating the current repo and pushing it to GitHub."
 echo $lineBreak
 if !( git add . ); then
     echo "Something went wrong while trying to add files."
-    echo "Make sure you are in the right directory."
-    echo "Your current working directory is: $PWD"
+    not_my_dir
     something_wrong
 else
     echo "Changes successfully added."
