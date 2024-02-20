@@ -15,20 +15,22 @@ else
     echo "Please please type your notes for this commit and press enter when done."
     read theCommit
     if !( git commit -m "$theCommit" ); then
-        echo "Unable to commit changes."
-        echo "Read above messages for errors."
-        echo $lineBreak
-        exit 1
+        something_wrong
+        #echo "Unable to commit changes."
+        #echo "Read above messages for errors."
+        #echo $lineBreak
+        #exit 1
     else
         echo $lineBreak
         echo "Changes commited successfully."
         echo "Please enter your password."
         if !(git push); then
-            echo $lineBreak
-            echo "Something went wrong."
-            echo "Please check the above messages for errors."
-            echo $lineBreak
-            exit 1
+            something_wrong
+            #echo $lineBreak
+            #echo "Something went wrong."
+            #echo "Please check the above messages for errors."
+            #echo $lineBreak
+            #exit 1
         else
             echo $lineBreak
             echo "All done. Git repo successfully updated."
@@ -36,4 +38,5 @@ else
         fi
     fi
 fi
+say_goodbye
 exit 0
