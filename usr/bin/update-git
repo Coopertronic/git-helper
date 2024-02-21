@@ -14,7 +14,9 @@ if !( git add . ); then
 else
     echo "Changes successfully added."
     echo $lineBreak
-    echo "Please please type your notes for this commit and press enter when done."
+    echo "Please type your notes for this"
+    echo "commit and press enter when done."
+    echo $lineBreak
     read theCommit
     if !( git commit -m "$theCommit" ); then
         echo "I am unable to commit the changes."
