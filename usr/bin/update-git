@@ -4,7 +4,6 @@ source ctos-functions
 
 clear
 cd "$PWD"
-#lineBreak="<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>"
 echo "Updating the current repo and"
 echo "pushing it to a git repo."
 line_break
