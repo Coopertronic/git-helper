@@ -3,6 +3,7 @@
 source ctos-functions
 
 clear
+theCommit=$1
 cd "$PWD"
 echo "Updating the current repo and"
 echo "pushing it to a git repo."
@@ -12,12 +13,14 @@ if !( git add . ); then
     not_my_dir
     something_wrong
 else
-    echo "Changes successfully added."
-    line_break
-    echo "Please type your notes for this"
-    echo "commit and press enter when done."
-    line_break
-    read theCommit
+    if [[ $theCommit == '' ]]; then
+        echo "Changes successfully added."
+        line_break
+        echo "Please type your notes for this"
+        echo "commit and press enter when done."
+        line_break
+        read theCommit
+    fi
     if !( git commit -m "$theCommit" ); then
         echo "I am unable to commit the changes."
         something_wrong
