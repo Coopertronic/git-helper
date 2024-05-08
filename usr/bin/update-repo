@@ -1,17 +1,18 @@
 #!/bin/bash
 
-##  Relies on sshpass and ctos-functions
+##  Relies on sshpass, git-helper and ctos-functions
 
 ##      Functions
 source ctos-functions
-##  Pulls the repo without suppling a password. Relies on the user suppling the password.
-do_pull() {
+##  Pushes the repo without suppling a password. Relies on the user suppling the password.
+do_push() {
     local repoName="$1"
     local repoLoc="$2"
+    local repoCommit="$3"
     cd $repoLoc
-    echo "Doing a blind pull."
+    echo "Doing a blind push."
     echo "You may need your password."
-    if !( git pull ); then
+    if !( update-git "$3" ); then
         something_wrong
     else
         echo "The repo $repoName has been updated."
@@ -19,19 +20,21 @@ do_pull() {
     fi
 }
 
-##      Main script
+##  Main script
 pwdLoc="$HOME/.pwds"
-repoPrefix='ctos'                  ### This can be changed to reflect the repo collection
+repoPrefix='ctos'                  ###  This can be changed to reflect the repo collection
 posLoc=('www' 'Compiler' 'pkgBld') ##   An array of possible repo locations
 repoSuffix=''
+repoMsg=''
 if [ -z "$1" ]; then
     ##  Error and exit
     line_break
-    echo -e "You need to pass the repo name type to the script\nwhen you run it, like if the repo is $repoPrefix-assets\nyou would use the type assets because it is on the\nother side of $repoPrefix. If the repo is called\n$repoPrefix-side-repo you would pass side-repo to\npull-$repoPrefix to update the repo."
+    echo -e "You need to pass the repo name type to this command\nwhen you run it, like if the repo is $repoPrefix-assets\nyou would use the type assets because it is on the\nother side of $repoPrefix. If the repo is called\n$repoPrefix-side-repo you would pass side-repo to\nupdate $repoPrefix-side-repo and push it to a git server."
     line_break
     exit 1
 else
     repoSuffix="$1"
+    repoMsg="$2"
     repoName="$repoPrefix-$repoSuffix"
     line_break '#'
     echo -e "Looking for the repo in different locations.\n Please wait ..."
@@ -47,20 +50,20 @@ else
             echo "Test that .pwds folder exists."
             if !( test_location "$pwdLoc" ); then
                 echo "No passwords folder found."
-                do_pull $repoName $repoLoc
+                do_push $repoName $repoLoc $repoMsg
             else
                 echo "yes"
                 ##  Read password file if it exists.
                 if !( [ -e "$pwdLoc/$repoName"  ] ); then
                     echo "No password file found for $repoName."
-                    do_pull $repoName $repoLoc
+                    do_pull $repoName $repoLoc $repoMsg
                 else
                     if !( grep -q . "$pwdLoc/$repoName" ); then
                         echo -e "The password file exists for $repoName,\nbut it is empty."
-                        do_pull $repoName $repoLoc
+                        do_pull $repoName $repoLoc $repoMsg
                     else
                         cd $repoLoc
-                        if !( sshpass -f "$pwdLoc/$repoName" git pull ); then
+                        if !( sshpass -f "$pwdLoc/$repoName" update-git $repoMsg ); then
                             something_wrong
                         else
                             echo "$repoName has been updated."
