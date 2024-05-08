@@ -1,0 +1,77 @@
+#!/bin/bash
+
+##  Relies on sshpass and ctos-functions
+
+##      Functions
+source ctos-functions
+do_pull() {
+    local repoName="$1"
+    local repoLoc="$2"
+    cd $repoLoc
+    echo "Doing a blind pull."
+    echo "You may need your password."
+    if !( git pull ); then
+        something_wrong
+    else
+        echo "The repo $repoName has been updated."
+        exit 0
+    fi
+}
+
+##      Main script
+pwdLoc="$HOME/.pwds"
+repoPrefix='ctos'                  ### This can be changed to reflect the repo collection
+posLoc=('www' 'Compiler' 'pkgBld') ##   An array of possible repo locations
+repoSuffix=''
+if [ -z "$1" ]; then
+    ##  Error and exit
+    line_break
+    echo -e "You need to pass the repo name type to the script\nwhen you run it, like if the repo is $repoPrefix-assets\nyou would use the type assets because it is on the\nother side of $repoPrefix. If the repo is called\n$repoPrefix-side-repo you would pass side-repo to\npull-$repoPrefix to update the repo."
+    line_break
+    exit 1
+else
+    repoSuffix="$1"
+    repoName="$repoPrefix-$repoSuffix"
+    line_break '#'
+    echo -e "Looking for the repo in different locations.\n Please wait ..."
+    for i in "${posLoc[@]}"; do
+        thLoc="${i}"
+        repoLoc="$HOME/$thLoc/$repoName"
+        if !( test_location "$repoLoc" ); then
+            ##  If it's not found move on to the next one
+            echo "$repoName not found in $thLoc"
+        else
+            ##  If found pull the repo.
+            echo "$repoName has been found in $thLoc"
+            echo "Test that .pwds folder exists."
+            if !( test_location "$pwdLoc" ); then
+                echo "No passwords folder found."
+                do_pull $repoName $repoLoc
+            else
+                echo "yes"
+                #cd "$HOME/$thLoc/$repoName"
+                ##  Read password file if it exists.
+                if !( [ -e "$pwdLoc/$repoName"  ] ); then
+                    echo "No password file found for $repoName."
+                    do_pull $repoName $repoLoc
+                else
+                    if !( grep -q . "$pwdLoc/$repoName" ); then
+                        echo -e "The password file exists for $repoName,\nbut it is empty."
+                        do_pull $repoName $repoLoc
+
+                    else
+                        if !( sshpass -f "$pwdLoc/$repoName" git pull ); then
+                            something_wrong
+                        else
+                            echo "$repoName has been updated."
+                        fi
+                    fi
+                fi
+
+            fi
+
+        fi
+
+    done
+
+fi
