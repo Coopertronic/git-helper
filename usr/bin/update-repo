@@ -63,7 +63,6 @@ repoCommit=''
 while getopts "hvn:s:c:" option; do
     case $option in
     n)
-        ./
         repoSearchName=(${OPTARG})
         ;;
     s)

@@ -58,7 +58,7 @@ repoSearchName=''
 ##      Options
 while getopts "hvn:s:" option; do
     case $option in
-    n)./
+    n)
         repoSearchName=(${OPTARG})
         ;;
     s)
