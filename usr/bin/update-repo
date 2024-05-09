@@ -126,11 +126,11 @@ else
                 ##  Read password file if it exists.
                 if !( [ -e "$pwdLoc/$repoName"  ] ); then
                     echo "No password file found for $repoName."
-                    do_pull $repoName $repoLoc $repoMsg
+                    do_push $repoName $repoLoc $repoMsg
                 else
                     if !( grep -q . "$pwdLoc/$repoName" ); then
                         echo -e "The password file exists for $repoName,\nbut it is empty."
-                        do_pull $repoName $repoLoc $repoMsg
+                        do_push $repoName $repoLoc $repoMsg
                     else
                         cd $repoLoc
                         if !( sshpass -f "$pwdLoc/$repoName" update-git $repoMsg ); then
