@@ -1,9 +1,46 @@
 #!/bin/bash
+PROGRAM=$(basename $0)
+VERSION="0.0.1"
 
 ##  Relies on sshpass, git-helper and ctos-functions
 
 ##      Functions
 source ctos-functions
+##      Script version
+version_info() {
+    echo -e "\n$0 $VERSION - Matthew Phillip Cooper"
+}
+##      Help screen
+help_me() {
+    version_info
+    cat <<EOT
+    Usage: $PROGRAM <-s [Prefix of the repo] -n [Suffix of the repo] -c [Commit message]> 
+        -s to pass the name of the repo group.
+    *   -n to pass the name of the repo.
+        -c to pass the commit message for git.
+        -v to display version information
+        -h to view this help screen
+    * = Required
+    If used with no option then it will fail.
+    A repo name MUST be supplied via -n.
+    Commit messages must be supplied via inverted commas.
+
+    Advice:
+
+        --  It is advised that you create a .pwds folder in your home directory or use
+            GPG keys to access your repos. You can store the key passprases in a
+            keystore of make your keys passwordless for automatic operation.
+
+    Example:
+
+        --  update-repo -n side-repo -s ctos -c "My commit message"
+
+    See man page build4repo for more help.
+
+        --  man git-helper
+    
+EOT
+}
 ##  Pushes the repo without suppling a password. Relies on the user suppling the password.
 do_push() {
     local repoName="$1"
@@ -19,22 +56,56 @@ do_push() {
         exit 0
     fi
 }
+repoGroupName=''
+repoSearchName=''
+repoCommit=''
+##      Options
+while getopts "hvn:s:c:" option; do
+    case $option in
+    n)
+        ./
+        repoSearchName=(${OPTARG})
+        ;;
+    s)
+        repoGroupName=(${OPTARG})
+        ;;
+    c)
+        repoCommit=(${OPTARG})
+        ;;
+    h)
+        help_me
+        exit 3
+        ;;
+    v)
+        version_info
+        exit 3
+        ;;
+    ?)
+        help_me
+        exit 1
+        ;;
+    esac
+done
 
 ##  Main script
 pwdLoc="$HOME/.pwds"
-repoPrefix='ctos'                  ###  This can be changed to reflect the repo collection
+if [ -z "$repoGroupName" ]; then
+    repoPrefix='ctos' ###   This can be changed to reflect the repo collection
+else
+    repoPrefix=$repoGroupName
+fi
 posLoc=('www' 'Compiler' 'pkgBld') ##   An array of possible repo locations
 repoSuffix=''
 repoMsg=''
-if [ -z "$1" ]; then
+if [ -z "$repoSearchName" ]; then
     ##  Error and exit
     line_break
-    echo -e "You need to pass the repo name type to this command\nwhen you run it, like if the repo is $repoPrefix-assets\nyou would use the type assets because it is on the\nother side of $repoPrefix. If the repo is called\n$repoPrefix-side-repo you would pass side-repo to\nupdate $repoPrefix-side-repo and push it to a git server."
+    help_me
     line_break
     exit 1
 else
-    repoSuffix="$1"
-    repoMsg="$2"
+    repoSuffix="$repoSearchName"
+    repoMsg="$repoCommit"
     repoName="$repoPrefix-$repoSuffix"
     line_break '#'
     echo -e "Looking for the repo in different locations.\n Please wait ..."
