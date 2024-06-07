@@ -1,20 +1,22 @@
 #!/bin/bash
 
+##  Needed functions - You need the ctos-functions package installed.
+source ctos-functions
+
 theAUR="https://aur.archlinux.org/"
 clear
-lineBreak="<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>"
 echo "Getting " $1" from the AUR."
-echo $lineBreak
+line_break
 if !( git clone $theAUR$1.git); then
-	echo $lineBreak
+	line_break
 	echo "Something went wrong while trying to connect to the AUR to retrive " $1
 	echo "Check your internet connection and spelling, then try again."
-	echo $lineBreak
+	line_break
 	exit 1
 else
-	echo $lineBreak
+	line_break
 	echo "Successfully cloned to the folder " $1
 	echo "You CD into it"
-	echo $lineBreak
+	line_break
 	exit 0
 fi
