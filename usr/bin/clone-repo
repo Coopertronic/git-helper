@@ -94,7 +94,7 @@ else
     repoRoot=$repoAuthor
 fi
 
-if [ $repoProtocol -eq 'https' ]; then
+if [[ $repoProtocol == "https" ]]; then
     theRepo="https://github.com/$repoRoot/"
 else
     theRepo="git@github.com:$repoRoot/"
