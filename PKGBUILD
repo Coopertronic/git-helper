@@ -2,7 +2,7 @@
 pkgname=git-helper
 _destname1="/usr"
 pkgver=1.r32.f55e643
-pkgrel=1
+pkgrel=2
 pkgdesc="Helper scripts that make using git in CLI less time consuming."
 arch=('any')
 url="https://github.com/Coopertronic/git-helper.git"
