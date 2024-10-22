@@ -35,7 +35,7 @@ help_me() {
 
         --  update-repo -n side-repo -s ctos -c "My commit message"
 
-    See man page build4repo for more help.
+    See man page git-helper for more help.
 
         --  man git-helper
     

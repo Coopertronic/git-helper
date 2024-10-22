@@ -3,6 +3,24 @@
 ##  Needed functions - You need the ctos-functions package installed.
 source ctos-functions
 
+###		Check repo name has been passed
+if [ -z "$1" ]; then
+	clear
+	line_break '#'
+	cat <<EOT
+		ERROR ! !
+	
+	No repo name was spcified.
+	
+	Usage:
+
+		-	clone-aur scummvm-git
+
+EOT
+	line_break '#'
+	exit 1
+fi
+
 theAUR="https://aur.archlinux.org/"
 clear
 echo "Getting " $1" from the AUR."
@@ -16,7 +34,7 @@ if !( git clone $theAUR$1.git); then
 else
 	line_break
 	echo "Successfully cloned to the folder " $1
-	echo "You CD into it"
+	echo "You can now CD into it."
 	line_break
 	exit 0
 fi

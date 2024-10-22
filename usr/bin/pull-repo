@@ -33,7 +33,7 @@ help_me() {
 
         --  pull-repo -n side-repo -s ctos
 
-    See man page build4repo for more help.
+    See man page git-helper for more help.
 
         --  man git-helper
     
