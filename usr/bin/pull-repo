@@ -3,9 +3,29 @@ PROGRAM=$(basename $0)
 VERSION="0.0.1"
 
 ##  Relies on sshpass and ctos-functions
+thSources='ctos-functions'
 
-##      Functions
-source ctos-functions
+if [ ! -f "$thSources" ]; then
+    echo "Warning: No $thSources script found locally."
+    if command -v $thSources >/dev/null 2>&1; then
+        echo "Success: The script $thSources is installed globally."
+        source $thSources
+    else
+        echo "Error: '$thSources' script not found globally or locally."
+        echo "You must have $thSources avalible to this script."
+        echo "Please download this to the running folder:" 
+        echo "https://raw.githubusercontent.com/Coopertronic/useful-bash-functions/refs/heads/main/usr/bin/ctos-functions"
+        echo "You may need to 'chmod +x ctos-functions' to get it to work."
+        exit 1
+    fi
+else
+    echo "Success: The script $thSources is available locally."
+    source $thSources
+fi
+
+#########################
+##      Functions       #
+#########################
 ##      Script version
 version_info() {
     echo -e "\n$0 $VERSION - Matthew Phillip Cooper"
