@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#   This script installs git web so you can view your projects.
+#   It will download the git project into the folder it was run from.
+
+git clone https://git.kernel.org/pub/scm/git/git.git
+cd git
+make GITWEB_PROJECTROOT="/srv/git" prefix=/usr gitweb
+    SUBDIR gitweb
+    SUBDIR ../
+make[2]: `GIT-VERSION-FILE' is up to date.
+    GEN gitweb.cgi
+    GEN static/gitweb.js
+
