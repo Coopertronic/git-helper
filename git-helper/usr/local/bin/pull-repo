@@ -1,0 +1,157 @@
+#!/bin/bash
+PROGRAM=$(basename $0)
+VERSION="0.0.1"
+
+##  Relies on sshpass and ctos-functions
+thSources='ctos-functions'
+
+if [ ! -f "$thSources" ]; then
+    echo "Warning: No $thSources script found locally."
+    if command -v $thSources >/dev/null 2>&1; then
+        echo "Success: The script $thSources is installed globally."
+        source $thSources
+    else
+        echo "Error: '$thSources' script not found globally or locally."
+        echo "You must have $thSources avalible to this script."
+        echo "Please download this to the running folder:" 
+        echo "https://raw.githubusercontent.com/Coopertronic/useful-bash-functions/refs/heads/main/usr/bin/ctos-functions"
+        echo "You may need to 'chmod +x ctos-functions' to get it to work."
+        exit 1
+    fi
+else
+    echo "Success: The script $thSources is available locally."
+    source $thSources
+fi
+
+#########################
+##      Functions       #
+#########################
+##      Script version
+version_info() {
+    echo -e "\n$0 $VERSION - Matthew Phillip Cooper"
+}
+##      Help screen
+help_me() {
+    version_info
+    cat <<EOT
+    Usage: $PROGRAM <-s [Prefix of the repo] -n [Suffix of the repo]>
+        -s to pass the name of the repo group.
+    *   -n to pass the name of the repo.
+        -v to display version information
+        -h to view this help screen
+    * = Required
+    If used with no option then it will fail.
+    A repo name MUST be supplied via -n.
+
+    Advice:
+
+        --  It is advised that you create a .pwds folder in your home directory or use
+            GPG keys to access your repos. You can store the key passprases in a
+            keystore of make your keys passwordless for automatic operation.
+
+    Example:
+
+        --  pull-repo -n side-repo -s ctos
+
+    See man page git-helper for more help.
+
+        --  man git-helper
+    
+EOT
+}
+##  Pulls the repo without suppling a password. Relies on the user suppling the password.
+do_pull() {
+    local repoName="$1"
+    local repoLoc="$2"
+    cd $repoLoc
+    echo "Doing a blind pull."
+    echo "You may need your password."
+    if !( git pull ); then
+        something_wrong
+    else
+        echo "The repo $repoName has been updated."
+        exit 0
+    fi
+}
+repoGroupName=''
+repoSearchName=''
+##      Options
+while getopts "hvn:s:" option; do
+    case $option in
+    n)
+        repoSearchName=(${OPTARG})
+        ;;
+    s)
+        repoGroupName=(${OPTARG})
+        ;;
+    h)
+        help_me
+        exit 3
+        ;;
+    v)
+        version_info
+        exit 3
+        ;;
+    ?)
+        help_me
+        exit 1
+        ;;
+    esac
+done
+
+##      Main script
+pwdLoc="$HOME/.pwds" ###    The default location of the passwords folder.
+if [ -z "$repoGroupName" ]; then
+    repoPrefix='ctos' ###   This can be changed to reflect the repo collection
+else
+    repoPrefix=$repoGroupName
+fi
+posLoc=('www' 'Compiler' 'pkgBld') ###  An array of possible repo locations
+repoSuffix=''
+if [ -z "$repoSearchName" ]; then
+    ##  Error and exit
+    line_break
+    help_me
+    line_break
+    exit 1
+else
+    repoSuffix="$repoSearchName"
+    repoName="$repoPrefix-$repoSuffix"
+    line_break '#'
+    echo -e "Looking for the repo in different locations.\n Please wait ..."
+    for i in "${posLoc[@]}"; do
+        thLoc="${i}"
+        repoLoc="$HOME/$thLoc/$repoName"
+        if !( test_location "$repoLoc" ); then
+            ##  If it's not found move on to the next one
+            echo "$repoName not found in $thLoc"
+        else
+            ##  If found pull the repo.
+            echo "$repoName has been found in $thLoc"
+            echo "Test that .pwds folder exists."
+            if !( test_location "$pwdLoc" ); then
+                echo "No passwords folder found."
+                do_pull $repoName $repoLoc
+            else
+                echo "yes"
+                ##  Read password file if it exists.
+                if !( [ -e "$pwdLoc/$repoName"  ] ); then
+                    echo "No password file found for $repoName."
+                    do_pull $repoName $repoLoc
+                else
+                    if !( grep -q . "$pwdLoc/$repoName" ); then
+                        echo -e "The password file exists for $repoName,\nbut it is empty."
+                        do_pull $repoName $repoLoc
+                    else
+                        cd $repoLoc
+                        if !( sshpass -f "$pwdLoc/$repoName" git pull ); then
+                            something_wrong
+                        else
+                            echo "$repoName has been updated."
+                        fi
+                    fi
+                fi
+            fi
+        fi
+    done
+fi

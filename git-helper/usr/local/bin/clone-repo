@@ -1,0 +1,118 @@
+#!/bin/bash
+PROGRAM=$(basename $0)
+VERSION="0.0.1"
+
+##  Needed functions - You need the ctos-functions package installed.
+source ctos-functions
+##      Script version
+version_info() {
+    echo -e "\n$0 $VERSION - Matthew Phillip Cooper"
+}
+##      Help screen
+help_me() {
+    version_info
+    cat <<EOT
+    Usage: $PROGRAM <-s [To enable https] -n [repo name] -a [name of repo Author]>
+        -s to enable HTTPS clone instead of SSH.
+    *   -n to pass the name of the repo.
+	*	-a to pass the name of the author.
+        -v to display version information
+        -h to view this help screen
+    * = Required
+    If used with no option then it will fail.
+    A repo name MUST be supplied via -n.
+
+    Advice:
+
+        --  It is advised that you create a .pwds folder in your home directory or use
+            GPG keys to access your repos. You can store the key passprases in a
+            keystore of make your keys passwordless for automatic operation.
+
+    Example:
+
+        --  clone-repo -n git-helper -s -a Coopertronic
+
+    See man page git-helper for more help.
+
+        --  man git-helper
+    
+EOT
+}
+
+##      Options
+repoProtocol='ssh'
+repoAuthor=''
+repoName=''
+while getopts "hvsn:a:" option; do
+    case $option in
+    n)
+        repoName=(${OPTARG})
+        ;;
+    a)
+        repoAuthor=(${OPTARG})
+        ;;
+    s)
+        repoProtocol='https'
+        ;;
+    h)
+        help_me
+        exit 3
+        ;;
+    v)
+        version_info
+        exit 3
+        ;;
+    ?)
+        help_me
+        exit 1
+        ;;
+    esac
+done
+
+##      Main script
+###         Enforces needing a repo name or exit to help
+if [ -z "$repoName" ]; then
+    line_break '#'
+    cat <<EOT
+
+    You have entered nothing for the repo name.
+    You MUST have a repo name to run this script.
+    Try this:
+
+    =>  clone-repo -n <SOME REPO NAME>
+
+EOT
+    line_break '#'
+    help_me
+    exit 1
+fi
+
+pwdLoc="$HOME/.pwds" ###    The default location of the passwords folder.
+if [ -z "$repoAuthor" ]; then
+    repoRoot='Coopertronic' ###   This can be changed to reflect the repo collection
+else
+    repoRoot=$repoAuthor
+fi
+
+if [[ $repoProtocol == "https" ]]; then
+    theRepo="https://github.com/$repoRoot/"
+else
+    theRepo="git@github.com:$repoRoot/"
+fi
+#theRepo="git@github.com:Coopertronic/"
+clear
+echo "Getting " $repoName" from GitHub."
+line_break
+if !( git clone $theRepo$repoName.git); then
+    line_break
+    echo "Something went wrong while trying to connect to GitHub to retrive " $repoName
+    echo "Check your internet connection and spelling, then try again."
+    line_break
+    something_wrong
+else
+    line_break
+    echo "Successfully cloned to the folder " $repoName
+    echo "You can CD into it now."
+    line_break
+    exit 0
+fi
