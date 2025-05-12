@@ -1,8 +1,6 @@
 Package: git-helper
-Version: 1.r8
-Section: utils
-Priority: optional
-Architecture: any
-Depends: git (>= 2.34.1)
+Version: 1.r42
+Architecture: all
+Depends: git
 Maintainer: Matthew Phillip Cooper <coopertronics@gmail.com>
 Description: Git Helper - This script helps you to update your git repo by enabling you to simply type update-git.
